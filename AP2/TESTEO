@@ -1,0 +1,18 @@
+{
+"id": "id1",
+"name": "TOTO",
+"age": 41,
+"albums":"",
+"tracks":"",
+"self":"",
+
+}
+
+{
+"id": "id1",
+"name": "TOTO",
+"age": 41,
+"albums":"xd",
+"tracks":"xd",
+"self":"xd"
+}
