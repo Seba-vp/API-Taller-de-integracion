@@ -10,6 +10,10 @@ class Artista(models.Model):
     tracks = models.URLField( default=None)
     Self = models.URLField(default=None)
 
+
+    def diccionario(self):
+        return {'id': self.id , 'name': self.name, 'age':self.age, 'albums':self.albums, 'tracks':self.tracks, 'self':self.Self }
+
 class Album(models.Model):
     id = models.CharField(max_length=100, default=None, primary_key=True)
     name = models.CharField(max_length=100, default=None)
@@ -17,6 +21,12 @@ class Album(models.Model):
     artist = models.URLField(default=None)
     tracks = models.URLField(default=None)
     Self = models.URLField(default=None)
+    artist_id = models.CharField(max_length=100, default=None, blank=True,  allow_null=True)
+
+
+    def diccionario(self):
+        return {'id': self.id , 'name': self.name, 'genre':self.genre, 'artist':self.artist, 'tracks':self.tracks, 'self':self.Self }
+
 
 class Cancion(models.Model):
     id = models.CharField(max_length=100, default=None, primary_key=True)
@@ -26,4 +36,10 @@ class Cancion(models.Model):
     artist = models.URLField(default=None)
     album = models.URLField(default=None)
     Self = models.URLField(default=None)
+    artist_id = models.CharField(max_length=100, default=None, blank=True, allow_null=True)
+    album_id = models.CharField(max_length=100, default=None, blank=True, allow_null=True)
+
+
+    def diccionario(self):
+        return {'id': self.id , 'name': self.name, 'duration':self.age, 'times_Played':self.times_Played, 'artist':self.artist, 'album':self.album, 'self':self.Self }
 
