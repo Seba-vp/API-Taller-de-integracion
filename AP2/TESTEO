@@ -16,3 +16,13 @@
 "tracks":"xd",
 "self":"xd"
 }
+
+
+    {
+        "id": "3333333333",
+        "name": "3 Jackson",
+        "age": 21,
+        "albums": "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u/albums",
+        "tracks": "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u/tracks",
+        "self": "https://apihost.com/artists/TWljaGFlbCBKYWNrc29u"
+    }
