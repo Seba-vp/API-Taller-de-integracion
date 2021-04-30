@@ -17,10 +17,14 @@ from django.contrib import admin
 from django.urls import path, include
 from musicAPI import urls
 
+#de deploy
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('musicAPI.urls')),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
 #path('api/', include(router.urls))

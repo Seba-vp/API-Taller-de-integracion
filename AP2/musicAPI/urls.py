@@ -5,7 +5,7 @@ urlpatterns = [
     path('', views.api.urls, name="api-overview"),
 
 
-    #GET
+    #GET/DELETE/POST
     path('artists/', views.list_artistas, name="artists"),
     path('artists/<artist_id>', views.get_artist, name="artist"),
     path('artists/<artist_id>/albums', views.get_artist_albums, name="artist"),
@@ -17,8 +17,12 @@ urlpatterns = [
     
     path('tracks/', views.list_tracks, name="track"),
     path('tracks/<track_id>', views.get_track, name="track"),
-  
 
+    #PUT
+
+    path('artists/<artist_id>/albums/play', views.play_albums, name="play"),
+    path('albums/<album_id>/tracks/play', views.play_tracks, name="play"),
+    path('tracks/<track_id>/play', views.play, name="play"),
 
 
 ]

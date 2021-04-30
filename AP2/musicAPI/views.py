@@ -30,7 +30,9 @@ def decoder(x):
     x = str(x)
     return x.split('+')[0]
 
-base_url = 'http://127.0.0.1:8000/api/'
+#base_url = 'http://127.0.0.1:8000/api/'
+
+base_url = 'https://spotiflaite.herokuapp.com/api/'
 
 
 
@@ -62,9 +64,9 @@ def list_artistas(request):
                     'id': artist_id,
                     'name': name, 
                     'age': age,
-                    'albums': base_url+'atists/'+str(artist_id)+'/albums',
-                    'tracks': base_url+'atists/'+str(artist_id)+'/tracks',
-                    'Self': base_url+'atists/'+str(artist_id),
+                    'albums': base_url+'artists/'+str(artist_id)+'/albums',
+                    'tracks': base_url+'artists/'+str(artist_id)+'/tracks',
+                    'Self': base_url+'artists/'+str(artist_id),
                     }
                 artist = Artista.objects.create(**to_create)
                 return JsonResponse(artist.diccionario(), status=201)
@@ -121,14 +123,16 @@ def get_artist_albums(request, artist_id):
                     data = 'Ya existe este album'
                     return JsonResponse(data,status = 409, safe=False)
                 else:
+                    artista = Artista.objects.get(id=artist_id)
                     to_create = {
                         'id': album_id,
                         'name': name, 
                         'genre': genre,
-                        'artist': base_url+'atists/'+str(artist_id),
+                        'artist': base_url+'artists/'+str(artist_id),
                         'tracks': base_url+'albums/'+str(album_id)+'/tracks',
                         'Self': base_url+'albums/'+str(album_id),
                         'artist_id': artist_id,
+                        'ar_fk': artista,
                         }
                     album = Album.objects.create(**to_create)
                     return JsonResponse(album.diccionario(), status=201)
@@ -165,11 +169,12 @@ def list_albums(request):
         l.append(a.diccionario())
     return JsonResponse(l, safe=False)
 
-@api.get("/albums/{album_id}")
+
+@api.api_operation(["GET","DELETE"],"/albums/{album_id}")
 def get_album(request, album_id):
     if Album.objects.filter(id=album_id).exists():
         a = Album.objects.get(id=album_id)
-        if reques.method == 'DELETE':
+        if request.method == 'DELETE':
             a.delete()
             data = 'album eliminado'
             return JsonResponse(data, status = 204, safe=False)
@@ -210,6 +215,7 @@ def get_album_tracks(request, album_id):
                     return JsonResponse(data,status = 409, safe=False)
                 else:
                     album = Album.objects.get(id=album_id)
+                    artista = Artista.objects.get(id=album.artist_id)
 
                     to_create = {
                         'id': track_id,
@@ -221,6 +227,8 @@ def get_album_tracks(request, album_id):
                         'Self': base_url+'tracks/'+str(track_id),
                         'artist_id': album.artist_id,
                         'album_id': album_id,
+                        'ar_fk': artista,
+                        'al_fk': album,
                         }
                     
                     track = Cancion.objects.create(**to_create)
@@ -235,28 +243,84 @@ def get_album_tracks(request, album_id):
         
 #TRACKS
 @api.get("/tracks")
-def list_tracks(request, album_id):
+def list_tracks(request):
     qs = Cancion.objects.all()
     l = []
-
     for t in qs:
         l.append(t.diccionario())
     return JsonResponse(l , safe=False)
 
-@api.get("/tracks/{track_id}")
+
+@api.api_operation(["GET","DELETE"],"/tracks/{track_id}")
 def get_track(request, track_id):
-    if Cancion.objects.filter(id=track_id).exists()::
-        t = Track.objects.get(id=track_id)
-        return JsonResponse(t.diccionario())
+    if Cancion.objects.filter(id=track_id).exists():
+        t = Cancion.objects.get(id=track_id)
+        if request.method == 'DELETE':
+            t.delete()
+            data = 'track eliminado'
+            return JsonResponse(data, status = 204, safe=False)
+
+        else:
+            return JsonResponse(t.diccionario())
     else:
         data = 'Track no encontrado'
         return JsonResponse(data,status = 404, safe=False)
-        
-
-
-##### DELETE ####
-
-
 
 ##### PUT ####
 
+@api.put("/artists/{artist_id}/albums/play")
+def play_albums(request, artist_id):
+
+    if Artista.objects.filter(id=artist_id).exists():
+        tracks = Cancion.objects.all()
+        tracks_to_update = []
+
+        for track in tracks:
+            if track.artist_id == artist_id:
+                tracks_to_update.append(track)
+        
+        for track in tracks_to_update:
+            times_p = int(track.times_Played) + 1
+            track.times_Played = times_p
+            track.save()
+
+        data = 'todas las canciones del artista fueron reproducidas'
+        return JsonResponse(data,status = 200, safe=False)
+    else:
+        data = 'artista no encontrado'
+        return JsonResponse(data,status = 404, safe=False)
+
+@api.put("/albums/{album_id}/tracks/play")
+def play_tracks(request, album_id):
+    if Album.objects.filter(id=album_id).exists():
+        tracks = Cancion.objects.all()
+        tracks_to_update = []
+
+        for track in tracks:
+            if track.album_id == album_id:
+                tracks_to_update.append(track)
+        
+        for track in tracks_to_update:
+            times_p = int(track.times_Played) + 1
+            track.times_Played = times_p
+            track.save()
+
+        data = 'todas las canciones del album fueron reproducidas'
+        return JsonResponse(data,status = 200, safe=False)
+    else:
+        data = 'album no encontrado'
+        return JsonResponse(data,status = 404, safe=False)
+
+@api.put("/tracs/{track_id}/tracks/play")  
+def play(request, track_id):
+    if Cancion.objects.filter(id=track_id).exists():
+        track = Cancion.objects.get(id = track_id)
+        times_p = int(track.times_Played) + 1
+        track.times_Played = times_p
+        track.save()
+        data = 'track reproducida'
+        return JsonResponse(data,status = 200, safe=False)
+    else:
+        data = 'track no encontrado'
+        return JsonResponse(data,status = 404, safe=False)
+    

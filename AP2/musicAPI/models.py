@@ -22,6 +22,7 @@ class Album(models.Model):
     tracks = models.URLField(default=None)
     Self = models.URLField(default=None)
     artist_id = models.CharField(max_length=100, default=None, blank=True)
+    ar_fk = models.ForeignKey(Artista, on_delete=models.CASCADE, default=None)
 
 
     def diccionario(self):
@@ -38,6 +39,9 @@ class Cancion(models.Model):
     Self = models.URLField(default=None)
     artist_id = models.CharField(max_length=100, default=None, blank=True)
     album_id = models.CharField(max_length=100, default=None, blank=True)
+    ar_fk = models.ForeignKey(Artista, on_delete=models.CASCADE, default=None)
+    al_fk = models.ForeignKey(Album, on_delete=models.CASCADE, default=None)
+
 
 
     def diccionario(self):
