@@ -32,6 +32,7 @@ def decoder(x):
 
 #base_url = 'http://127.0.0.1:8000/api/'
 
+#deploy
 base_url = 'https://spotiflaite.herokuapp.com/api/'
 
 
@@ -56,8 +57,8 @@ def list_artistas(request):
             artist_id = coder(name)
 
             if Artista.objects.filter(id=artist_id).exists():
-                data = 'Ya existe este artista'
-                return JsonResponse(data,status = 409, safe=False)
+                artista = Artista.objects.get(id=artist_id)
+                return JsonResponse(artista.diccionario(),status = 409, safe=False)
 
             else:
                 to_create = {
@@ -120,8 +121,8 @@ def get_artist_albums(request, artist_id):
                 album_id = coder(str(name)+':'+str(artist_id))
 
                 if Album.objects.filter(id=album_id).exists():
-                    data = 'Ya existe este album'
-                    return JsonResponse(data,status = 409, safe=False)
+                    album = Album.objects.get(id=album_id)
+                    return JsonResponse(album.diccionario(),status = 409, safe=False)
                 else:
                     artista = Artista.objects.get(id=artist_id)
                     to_create = {
@@ -211,8 +212,9 @@ def get_album_tracks(request, album_id):
                 track_id = coder(str(name)+':'+str(album_id))
 
                 if Cancion.objects.filter(id=track_id).exists():
-                    data = 'Ya existe este track'
-                    return JsonResponse(data,status = 409, safe=False)
+                    track = Cancion.objects.get(id=track_id)
+                    
+                    return JsonResponse(track.diccionario(),status = 409, safe=False)
                 else:
                     album = Album.objects.get(id=album_id)
                     artista = Artista.objects.get(id=album.artist_id)
@@ -221,7 +223,7 @@ def get_album_tracks(request, album_id):
                         'id': track_id,
                         'name': name, 
                         'duration': duration,
-                        'times_Played': 0,
+                        'times_played': 0,
                         'artist': base_url+'artists/'+str(album.artist_id),
                         'album': base_url+'albums/'+str(album_id),
                         'Self': base_url+'tracks/'+str(track_id),
@@ -232,7 +234,8 @@ def get_album_tracks(request, album_id):
                         }
                     
                     track = Cancion.objects.create(**to_create)
-                    return JsonResponse(track.diccionario(), status= 201)
+                    
+                    return JsonResponse(track.diccionario_no_id(), status= 201)
             else:
                 data = 'Input invalido'
                 return JsonResponse(data,status = 400, safe=False)
@@ -247,8 +250,8 @@ def list_tracks(request):
     qs = Cancion.objects.all()
     l = []
     for t in qs:
-        l.append(t.diccionario())
-    return JsonResponse(l , safe=False)
+        l.append(t.diccionario_no_id())
+    return JsonResponse(l , safe=False, status=200)
 
 
 @api.api_operation(["GET","DELETE"],"/tracks/{track_id}")
@@ -280,8 +283,8 @@ def play_albums(request, artist_id):
                 tracks_to_update.append(track)
         
         for track in tracks_to_update:
-            times_p = int(track.times_Played) + 1
-            track.times_Played = times_p
+            times_p = int(track.times_played) + 1
+            track.times_played = times_p
             track.save()
 
         data = 'todas las canciones del artista fueron reproducidas'
@@ -301,8 +304,8 @@ def play_tracks(request, album_id):
                 tracks_to_update.append(track)
         
         for track in tracks_to_update:
-            times_p = int(track.times_Played) + 1
-            track.times_Played = times_p
+            times_p = int(track.times_played) + 1
+            track.times_played = times_p
             track.save()
 
         data = 'todas las canciones del album fueron reproducidas'
@@ -315,8 +318,8 @@ def play_tracks(request, album_id):
 def play(request, track_id):
     if Cancion.objects.filter(id=track_id).exists():
         track = Cancion.objects.get(id = track_id)
-        times_p = int(track.times_Played) + 1
-        track.times_Played = times_p
+        times_p = int(track.times_played) + 1
+        track.times_played = times_p
         track.save()
         data = 'track reproducida'
         return JsonResponse(data,status = 200, safe=False)

@@ -33,7 +33,7 @@ class Cancion(models.Model):
     id = models.CharField(max_length=100, default=None, primary_key=True)
     name = models.CharField(max_length=100, default=None)
     duration = models.FloatField(default=None)
-    times_Played = models.IntegerField(default=None)
+    times_played = models.IntegerField(default=None)
     artist = models.URLField(default=None)
     album = models.URLField(default=None)
     Self = models.URLField(default=None)
@@ -45,5 +45,8 @@ class Cancion(models.Model):
 
 
     def diccionario(self):
-        return {'id': self.id , 'name': self.name, 'duration':self.duration, 'times_Played':self.times_Played, 'artist':self.artist, 'album':self.album, 'self':self.Self }
+        return {'id': self.id , 'name': self.name, 'duration':self.duration, 'times_played':self.times_played, 'artist':self.artist, 'album':self.album, 'self':self.Self }
 
+
+    def diccionario_no_id(self):
+        return {'name': self.name, 'duration':self.duration, 'times_played':self.times_played, 'artist':self.artist, 'album':self.album, 'self':self.Self }

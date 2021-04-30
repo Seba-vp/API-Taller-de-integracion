@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'API2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-#DATABASES = {
+#ATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.postgresql',
 #        'NAME': 'restfulapiDB',
